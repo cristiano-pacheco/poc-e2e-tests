@@ -1,0 +1,19 @@
+{
+  "name": "js",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "nightwatch",
+    "start-selenium": "java -jar ./resources/selenium-server/selenium-server-standalone-3.12.0.jar"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "chromedriver": "^2.38.3",
+    "knex": "^0.14.6",
+    "mysql": "^2.15.0",
+    "nightwatch": "^0.9.21"
+  }
+}
