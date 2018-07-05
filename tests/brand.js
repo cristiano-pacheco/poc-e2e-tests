@@ -16,7 +16,10 @@ module.exports = {
     process.exit(0);
   },
 
-  'Can opening a list of brands' : browser => {
+  'Can opening a list of brands' : async browser => {
+
+    await db('poctest_vehiclemanager_brand').insert({ name: 'Chevrolet' });
+    await db('poctest_vehiclemanager_brand').insert({ name: 'Volkswagen' });
 
     loginAdmin(browser);
 
@@ -26,7 +29,11 @@ module.exports = {
       .click('#nav > li:nth-child(12) > ul > li > a > span')
       .pause(2000)
       .assert.containsText('div.content-header h3', 'Brands')
-      .end();
+      .useXpath()
+      .expect.element(`//*[contains(text(),'Chevrolet')]`).to.be.present
+      .expect.element(`//*[contains(text(),'Volkswagen')]`).to.be.present;
+
+      browser.end();
   },
 
   'Create a brand' : browser => {
@@ -54,6 +61,27 @@ module.exports = {
     browser
       .useXpath()
       .expect.element(`//*[contains(text(),'Brand saved')]`).to.be.present;
+
+      browser.end();
+  },
+
+  'Test validation on brand creation form' : browser => {
+
+    loginAdmin(browser);
+
+    browser
+      .click('#nav > li:nth-child(12) > a > span')
+      .pause(1000)
+      .click('#nav > li:nth-child(12) > ul > li > a > span')
+      .pause(2000)
+      .click('button.scalable.add')
+      .pause(1000)
+      .click('button.scalable.save')
+      .pause(2000);
+
+    browser
+      .useXpath()
+      .expect.element(`//*[contains(text(),'Brand name is required')]`).to.be.present;
 
       browser.end();
   },
@@ -88,6 +116,36 @@ module.exports = {
     browser
       .useXpath()
       .expect.element(`//*[contains(text(),'Brand saved')]`).to.be.present;
+
+    browser.end();
+  },
+  
+
+ 'Test validation on brand update form' : async browser => {
+    const brandName = 'new brand';
+    const updatedBrandName = '';
+
+    await db('poctest_vehiclemanager_brand').insert({ name: brandName });
+
+    loginAdmin(browser);
+
+    browser
+      .click('#nav > li:nth-child(12) > a > span')
+      .pause(1000)
+      .click('#nav > li:nth-child(12) > ul > li > a > span')
+      .pause(2000)
+      .useXpath()
+      .click(`//*[contains(text(),'${brandName}')]`)
+      .useCss()
+      .pause(2000)
+      .clearValue('input[name="name"]')
+      .setValue('input[name="name"]', updatedBrandName)
+      .click('button.scalable.save')
+      .pause(2000);
+
+    browser
+      .useXpath()
+      .expect.element(`//*[contains(text(),'Brand name is required')]`).to.be.present;
 
     browser.end();
   },
